@@ -59,6 +59,9 @@ typedef struct TCP_CLIENT_T_ {
 
 static err_t tcp_client_close(void *arg) {
     TCP_CLIENT_T *state = (TCP_CLIENT_T *)arg;
+    if (!state) {
+        return ERR_VAL;
+    }
     err_t err = ERR_OK;
     if (state->tcp_pcb != NULL) {
         tcp_arg(state->tcp_pcb, NULL);
@@ -170,6 +173,9 @@ err_t tcp_client_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err
 
 static bool tcp_client_open(void *arg) {
     TCP_CLIENT_T *state = (TCP_CLIENT_T *)arg;
+    if (!state) {
+        return false; 
+    }
     DEBUG_printf("Connecting to %s port %u\n", ip4addr_ntoa(&state->remote_addr), TCP_PORT);
     state->tcp_pcb = tcp_new_ip_type(IP_GET_TYPE(&state->remote_addr));
     if (!state->tcp_pcb) {
@@ -224,6 +230,10 @@ void wifi_task(void *p) {
         printf("%s\n", request_new);
 
         TCP_CLIENT_T *state = tcp_client_init();
+        if (!state) {
+            printf("Failed to initialize TCP_CLIENT_T state\n");
+            continue;
+        }
 
         if (state && tcp_client_open(state)) {
             printf("SOCKET: Conectado ao servidor\n");
