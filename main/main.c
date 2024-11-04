@@ -235,7 +235,7 @@ void wifi_task(void *p) {
             continue;
         }
 
-        if (state && tcp_client_open(state)) {
+        if (tcp_client_open(state)) {
             printf("SOCKET: Conectado ao servidor\n");
             cyw43_arch_lwip_begin();
             int err = tcp_write(state->tcp_pcb, request_new, strlen(request_new), 0);
